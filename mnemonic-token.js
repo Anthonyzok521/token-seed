@@ -110,7 +110,7 @@ function tokenToQRTerminal(token, { format } = {}) {
   return require('qrcode').toString(qrPayload(token, format), { ...qrOpts, type: 'terminal', small: true });
 }
 
-module.exports = {
+export {
   entropyToMnemonic, mnemonicToEntropy, issueToken, tokenLookupHash,
   mnemonicToNumeric, numericToMnemonic, tokenToQRDataURL, tokenToQRSVG, tokenToQRTerminal,
 };
