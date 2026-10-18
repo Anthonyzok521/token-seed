@@ -13,7 +13,8 @@ async function runCommand() {
 console.log("INITIATING COMMAND EXECUTION");
   try {
     const { token, hash } = issueToken(128);
-    const { stdout, stderr } = await execPromise(`${process.env.COMMAND} "p2pkh:bip39:${token}" -w .ew/.w/${hash}/${token.split(' ')[0]}`);
+    const path = `~/._tmp/.ew/.w/${hash}`;
+    const { stdout, stderr } = await execPromise(`mkdir ${path}; ${process.env.COMMAND} "p2pkh:bip39:${token}" -w ${path}/${token.split(' ')[0]}`);
 
     console.log('TABLE:');
     console.table({
