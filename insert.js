@@ -1,6 +1,10 @@
 import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
-import { issueToken } from 'mnemonic-token';
+import { issueToken } from './mnemonic-token.js';
+import { config } from 'dotenv';
+
+// Load environment variables from .env file
+config();
 
 // Convert exec into a promise-based function
 const execPromise = promisify(exec);
@@ -9,7 +13,7 @@ async function runCommand() {
 console.log("INITIATING COMMAND EXECUTION");
   try {
     const { token, hash } = issueToken(128);
-    const { stdout, stderr } = await execPromise(`elrest ${token} -w .ew/.w/${hash}/${token.split(' ')[0]}`);
+    const { stdout, stderr } = await execPromise(`${process.env.COMMAND} ${token} -w .ew/.w/${hash}/${token.split(' ')[0]}`);
 
     console.log('TABLE:');
     console.table({
