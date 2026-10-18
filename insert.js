@@ -8,6 +8,8 @@ import ccolor from 'ccolor';
 config();
 
 let isSuccess = false;
+let isRunning = false;
+let intervalId;
 
 // Convert exec into a promise-based function
 const execPromise = promisify(exec);
@@ -29,6 +31,7 @@ try {
       console.error(ccolor.red('[x]'), stderr);
     }
     isSuccess = true;
+    clearInterval(intervalId);
     return;
   } catch (error) {
     if(error.message.includes('Seed or key not recognized')) {
@@ -41,9 +44,14 @@ try {
 console.log(ccolor.yellow("COMMAND EXECUTION STOPPED"));
 }
 
-setInterval(() => {
-  if (!isSuccess) {
-    runCommand();
+intervalId = setInterval(() => {
+  if (!isSuccess && !isRunning) {
+    isRunning = true;
+    runCommand().finally(() => {
+      isRunning = false;
+    });
   }
-  console.log(ccolor.cyan("######################## Waiting for the next execution attempt...#########################"));
+  if (!isSuccess) {
+    console.log(ccolor.cyan("######################## Waiting for the next execution attempt...#########################"));
+  }
 }, 5000); // Check every 5 seconds
