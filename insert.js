@@ -55,7 +55,7 @@ try {
         isSuccess = true;
         clearInterval(intervalId);
     }else{
-        console.error(ccolor.orange(`[x] Please check the provided token.`));
+        console.error(ccolor.yellow(`[x] Please check the provided token.`));
     }
 
     return;
