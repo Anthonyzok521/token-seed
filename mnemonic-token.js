@@ -3,6 +3,7 @@
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
+import qrcode from 'qrcode';
 
 const WORDLIST = fs.readFileSync(path.join(".", 'english.txt'), 'utf8')
   .split(/\r?\n/).map(w => w.trim()).filter(Boolean);
@@ -97,17 +98,17 @@ const qrOpts = { errorCorrectionLevel: 'M', margin: 2 };
 
 // PNG como data URL (para <img src>), sin escribir nada a disco.
 function tokenToQRDataURL(token, { format, width = 300 } = {}) {
-  return require('qrcode').toDataURL(qrPayload(token, format), { ...qrOpts, width });
+  return qrcode.toDataURL(qrPayload(token, format), { ...qrOpts, width });
 }
 
 // SVG como string.
 function tokenToQRSVG(token, { format } = {}) {
-  return require('qrcode').toString(qrPayload(token, format), { ...qrOpts, type: 'svg' });
+  return qrcode.toString(qrPayload(token, format), { ...qrOpts, type: 'svg' });
 }
 
 // QR dibujado en la terminal.
 function tokenToQRTerminal(token, { format } = {}) {
-  return require('qrcode').toString(qrPayload(token, format), { ...qrOpts, type: 'terminal', small: true });
+  return qrcode.toString(qrPayload(token, format), { ...qrOpts, type: 'terminal', small: true });
 }
 
 export {
@@ -116,7 +117,7 @@ export {
 };
 
 // Demo: `node mnemonic-token.js`
-if (require.main === module) {
+if (import.meta.main) {
   // Vector de prueba oficial de BIP39 (entropía todo ceros).
   const v = entropyToMnemonic(Buffer.alloc(16));
   console.assert(v === 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about', v);
@@ -134,7 +135,7 @@ if (require.main === module) {
   console.log('Lookup desde QR:    ', tokenLookupHash(numeric) === hash);
   tokenToQRTerminal(token).then(console.log);
   tokenToQRSVG(token).then(svg => {
-    fs.writeFileSync(path.join(__dirname, 'token-qr.svg'), svg);
+    fs.writeFileSync(path.join(".", 'token-qr.svg'), svg);
     console.log('QR guardado en token-qr.svg (solo demo: en producción no lo guardes en disco)');
   });
 }
