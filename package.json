@@ -9,7 +9,7 @@
   "keywords": [],
   "author": "Advanced Community",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "qrcode": "^1.5.4"
   }

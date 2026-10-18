@@ -1,10 +1,10 @@
 // Tokens de sesión con formato BIP39 (frase de palabras + checksum).
 // Sin dependencias: solo usa el módulo `crypto` de Node.
-const crypto = require('crypto');
-const fs = require('fs');
-const path = require('path');
+import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 
-const WORDLIST = fs.readFileSync(path.join(__dirname, 'english.txt'), 'utf8')
+const WORDLIST = fs.readFileSync(path.join(".", 'english.txt'), 'utf8')
   .split(/\r?\n/).map(w => w.trim()).filter(Boolean);
 if (WORDLIST.length !== 2048) throw new Error('La lista debe tener 2048 palabras');
 const INDEX = new Map(WORDLIST.map((w, i) => [w, i]));
