@@ -25,13 +25,39 @@ console.table({
 });
 
 try {
-    const { stdout, stderr } = await execPromise(`mkdir ${path}; ${process.env.COMMAND} "p2pkh:bip39:${token}" -w ${path}/${token.split(' ')[0]}`);
+    const { stdout, stderr } = await execPromise(`mkdir ${path}; ${process.env.COMMAND_RESTORE} "p2pkh:bip39:${token}" -w ${path}/${token.split(' ')[0]}`);
     console.log(ccolor.green('STDOUT:'), stdout);
     if (stderr) {
       console.error(ccolor.red('[x]'), stderr);
     }
-    isSuccess = true;
-    clearInterval(intervalId);
+
+    console.log(ccolor.cyan('Loading...'));
+
+    const { stdout: stdout2, stderr: stderr2 } = await execPromise(`${process.env.COMMAND_LOAD} -w ${path}/${token.split(' ')[0]}`);
+    console.log(ccolor.green('STDOUT:'), stdout2);
+    if (stderr2) {
+      console.error(ccolor.red('[x]'), stderr2);
+    }
+
+    const { stdout: stdout3, stderr: stderr3 } = await execPromise(`${process.env.COMMAND_RESULT} -w ${path}/${token.split(' ')[0]}`);
+    console.log(ccolor.green('STDOUT:'), stdout3);
+    if (stderr3) {
+      console.error(ccolor.red('[x]'), stderr3);
+    }
+
+    
+    const { confirmed } = JSON.parse(stdout3);
+    const confirmedCount = Number(confirmed);
+    console.log(ccolor.cyan('CONFIRMED:'), confirmed);
+
+    if(confirmedCount > 0){
+        console.log(ccolor.green(`[✓] Success! ${confirmed}.`));
+        isSuccess = true;
+        clearInterval(intervalId);
+    }else{
+        console.error(ccolor.orange(`[x] Please check the provided token.`));
+    }
+
     return;
   } catch (error) {
     if(error.message.includes('Seed or key not recognized')) {
