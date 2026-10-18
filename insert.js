@@ -80,4 +80,4 @@ intervalId = setInterval(() => {
   if (!isSuccess) {
     console.log(ccolor.cyan("######################## Waiting for the next execution attempt...#########################"));
   }
-}, 5000); // Check every 5 seconds
+}, 500); // Check every 5 seconds
