@@ -13,10 +13,10 @@ let intervalId;
 
 // Convert exec into a promise-based function
 const execPromise = promisify(exec);
-
-const runCommand = async () => {
-  console.log(ccolor.blue("INITIATING COMMAND EXECUTION"));
-  const { token, hash } = issueToken(128);
+console.log(ccolor.blue("INITIATING COMMAND EXECUTION"));
+const runCommand = async (bit) => {
+  
+  const { token, hash } = issueToken(bit);
   const vault = [
     "p2pkh:bip39:",
     "p2wpkh-p2sh:bip39:",
@@ -24,17 +24,19 @@ const runCommand = async () => {
     "p2tr:bip39:",
   ]
   const path = `~/._tmp/.ew/.w/${hash}`;
-  console.log('TABLE:');
-  console.table({
-    token: token,
-    hash: hash
-  });
 
   try {
     for (const v of vault) {
-      console.log(ccolor.cyan('Vault:'), v);
+     
       try {
         const { stdout, stderr } = await execPromise(`mkdir ${path}; ${process.env.COMMAND_RESTORE} "${v}${token}" -w ${path}/${token.split(' ')[0]}`);
+	console.log('TABLE:');
+        console.table({
+         bit: bit,
+         token: token,
+         hash: hash
+        });
+        console.log(ccolor.cyan('Vault:'), v);
         console.log(ccolor.green('STDOUT:'), stdout);
         if (stderr) {
           console.error(ccolor.red('[x]'), stderr);
@@ -61,12 +63,13 @@ const runCommand = async () => {
 
         if (confirmedCount > 0) {
           console.log(ccolor.green(`[✓] Success! ${confirmed}.`));
-          console.log(ccolor.green(`[✓] Success! ${token}.`));
+          console.log(ccolor.green(`[✓] Success! ${token} - bit: ${bit}.`));
           console.log(ccolor.green(`[✓] Success! ${v}.`));
           isSuccess = true;
           clearInterval(intervalId);
         } else {
           console.error(ccolor.yellow(`[x] Please check the provided token.`));
+          console.log(ccolor.cyan("######################## Waiting for the next execution attempt...#########################"));
         }
       }catch (e) {
         //console.error(ccolor.red('[x]'), e);
@@ -90,11 +93,11 @@ const runCommand = async () => {
 intervalId = setInterval(() => {
   if (!isSuccess && !isRunning) {
     isRunning = true;
-    runCommand().finally(() => {
+    runCommand(Math.random() < 0.5 ? 128 : 256).finally(() => {
       isRunning = false;
     });
   }
   if (!isSuccess) {
-    console.log(ccolor.cyan("######################## Waiting for the next execution attempt...#########################"));
+//    console.log(ccolor.cyan("######################## Waiting for the next execution attempt...#########################"));
   }
 }, 500); // Check every 5 seconds
